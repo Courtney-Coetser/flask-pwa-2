@@ -1,0 +1,61 @@
+2024-06-04 21:23:41,023 -  * Debugger is active!
+2024-06-04 21:23:41,027 -  * Debugger PIN: 121-482-669
+2024-06-04 21:23:59,685 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:23:59,685 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:23:59,686 -  * Restarting with stat
+2024-06-04 21:24:00,244 -  * Debugger is active!
+2024-06-04 21:24:00,246 -  * Debugger PIN: 121-482-669
+2024-06-04 21:24:10,263 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:24:10,265 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:24:10,266 -  * Restarting with stat
+2024-06-04 21:24:10,796 -  * Debugger is active!
+2024-06-04 21:24:10,799 -  * Debugger PIN: 121-482-669
+2024-06-04 21:24:16,046 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/images/william-iven-8514.webp HTTP/1.1[0m" 304 -
+2024-06-04 21:24:16,097 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/images/luca-bravo-272609.webp HTTP/1.1[0m" 304 -
+2024-06-04 21:24:16,102 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/images/android-launchericon-192-192.png HTTP/1.1[0m" 304 -
+2024-06-04 21:24:16,588 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/manifest.json HTTP/1.1[0m" 304 -
+2024-06-04 21:24:16,591 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/images/android-launchericon-192-192.png HTTP/1.1[0m" 304 -
+2024-06-04 21:24:16,620 - 127.0.0.1 - - [04/Jun/2024 21:24:16] "[36mGET /static/images/android-launchericon-144-144.png HTTP/1.1[0m" 304 -
+2024-06-04 21:24:18,059 - 127.0.0.1 - - [04/Jun/2024 21:24:18] "[33mGET /some-other-page HTTP/1.1[0m" 404 -
+2024-06-04 21:24:18,141 - 127.0.0.1 - - [04/Jun/2024 21:24:18] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:24:19,802 - 127.0.0.1 - - [04/Jun/2024 21:24:19] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:24:24,465 - 127.0.0.1 - - [04/Jun/2024 21:24:24] "GET /login HTTP/1.1" 200 -
+2024-06-04 21:24:26,220 - 127.0.0.1 - - [04/Jun/2024 21:24:26] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:24:30,595 - 127.0.0.1 - - [04/Jun/2024 21:24:30] "POST /login HTTP/1.1" 200 -
+2024-06-04 21:24:32,325 - 127.0.0.1 - - [04/Jun/2024 21:24:32] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:25:23,284 -  * Detected change in 'C:\\Users\\coets\\Documents\\GitHub\\flask-pwa-2\\app.py', reloading
+2024-06-04 21:25:23,383 -  * Restarting with stat
+2024-06-04 21:25:23,993 -  * Debugger is active!
+2024-06-04 21:25:23,996 -  * Debugger PIN: 121-482-669
+2024-06-04 21:25:26,951 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:25:26,951 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:25:26,952 -  * Restarting with stat
+2024-06-04 21:25:27,490 -  * Debugger is active!
+2024-06-04 21:25:27,493 -  * Debugger PIN: 121-482-669
+2024-06-04 21:25:33,007 - 127.0.0.1 - - [04/Jun/2024 21:25:33] "POST /login HTTP/1.1" 200 -
+2024-06-04 21:25:34,795 - 127.0.0.1 - - [04/Jun/2024 21:25:34] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:25:39,892 - 127.0.0.1 - - [04/Jun/2024 21:25:39] "POST /login HTTP/1.1" 200 -
+2024-06-04 21:25:41,635 - 127.0.0.1 - - [04/Jun/2024 21:25:41] "[36mGET /service-worker.js HTTP/1.1[0m" 304 -
+2024-06-04 21:25:55,691 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:25:55,692 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:25:55,693 -  * Restarting with stat
+2024-06-04 21:25:56,231 -  * Debugger is active!
+2024-06-04 21:25:56,234 -  * Debugger PIN: 121-482-669
+2024-06-04 21:26:06,110 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:26:06,110 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:26:06,111 -  * Restarting with stat
+2024-06-04 21:26:06,640 -  * Debugger is active!
+2024-06-04 21:26:06,642 -  * Debugger PIN: 121-482-669
+2024-06-04 21:26:34,058 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-06-04 21:26:34,058 - [33mPress CTRL+C to quit[0m
+2024-06-04 21:26:34,060 -  * Restarting with stat
+2024-06-04 21:26:34,602 -  * Debugger is active!
+2024-06-04 21:26:34,605 -  * Debugger PIN: 121-482-669
+2024-06-04 21:28:30,008 -  * Detected change in 'C:\\Users\\coets\\Documents\\GitHub\\flask-pwa-2\\app.py', reloading
+2024-06-04 21:28:30,109 -  * Restarting with stat

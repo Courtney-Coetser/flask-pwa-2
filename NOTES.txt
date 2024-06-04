@@ -1,0 +1,568 @@
+THIS IS MY CODE SURE YOU UNDERSTAND IT FULLY USING YOUR OWN KNOWLEDGE AND THE COMMENTS AS GUIDES
+```
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Initialize Flask app
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+# Initialize SQLAlchemy for database operations
+db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# User model for database representation
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+# Create database tables
+with app.app_context():
+    db.create_all()
+
+# Load user function for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Routes for Progressive Web App (PWA)
+@app.route('/')
+def home():
+    return render_template('index.html')  # Render the main home page
+
+@app.route('/offline.html')
+def offline():
+    return render_template('offline.html')  # Render the offline page for PWA
+
+@app.route('/service-worker.js')
+def sw():
+    return app.send_static_file('service-worker.js')  # Serve the service worker file
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'public, max-age=0'  # Set appropriate caching headers
+    return response
+
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user)  # Login the user if credentials match
+                flash('Login successful!', 'success')  # Flash success message
+                return redirect(url_for('home'))  # Redirect to the home page
+            else:
+                flash('Invalid password. Please try again.', 'error')  # Flash error for incorrect password
+        else:
+            flash('User not found. Please sign up first.', 'error')  # Flash error for user not found
+
+    return render_template('login.html')  # Render the login page
+
+# Registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists. Please choose a different one.', 'error')  # Flash error for existing username
+        else:
+            new_user = User(username=username, password=generate_password_hash(password))
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration successful! Please log in.', 'success')  # Flash success message
+            return redirect(url_for('login'))  # Redirect to the login page
+    
+    return render_template('register.html')  # Render the registration page
+
+# Run the Flask application
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+DO YOU NOTICE IT IS A FLASK PWA WITH LOGIN AND REGISTRATION?
+
+BELOW IS MY INDEX.HTML
+```
+{% extends 'layout.html' %}
+
+{% block body %}
+    <section id="about">
+        <div class="media media-img">
+            <img src="{{ url_for('static', filename='images/william-iven-8514.webp') }}" class="img-left" alt="Photo by William Iven" />
+            <a class="photo-credit" href="https://unsplash.com/@firmbee?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from William Iven"><span style="display:inline-block;padding:2px 3px;"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-1px;fill:white;" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M20.8 18.1c0 2.7-2.2 4.8-4.8 4.8s-4.8-2.1-4.8-4.8c0-2.7 2.2-4.8 4.8-4.8 2.7.1 4.8 2.2 4.8 4.8zm11.2-7.4v14.9c0 2.3-1.9 4.3-4.3 4.3h-23.4c-2.4 0-4.3-1.9-4.3-4.3v-15c0-2.3 1.9-4.3 4.3-4.3h3.7l.8-2.3c.4-1.1 1.7-2 2.9-2h8.6c1.2 0 2.5.9 2.9 2l.8 2.4h3.7c2.4 0 4.3 1.9 4.3 4.3zm-8.6 7.5c0-4.1-3.3-7.5-7.5-7.5-4.1 0-7.5 3.4-7.5 7.5s3.3 7.5 7.5 7.5c4.2-.1 7.5-3.4 7.5-7.5z"></path></svg></span><span style="display:inline-block;padding:2px 3px;">William Iven</span></a>
+        </div>
+        <div class="details">
+            <h2>About</h2>
+            <p>This App is a simple demonstration of how to build a Progressive Web Application (PWA) using Flask and existing web technologies. Progressive web applications are like good old web sites but better. It allows us to deliver amazing user experiences on the web and on mobile.</p>
+        </div>
+    </section>
+    <section id="characteristics">
+        <h2>Characteristics of Progressive Web Apps</h2>
+
+        <div class="characteristics">
+            <div class="card">
+                <h3>Progressive</h3>
+                <p>By definition, a progressive web app must work on any device and enhance progressively, taking advantage of any features available on the user’s device and browser.</p>
+            </div>
+            <div class="card">
+                <h3>Discoverable</h3>
+                <p>Because a progressive web app is a website, it should be discoverable in search engines. This is a major advantage over native applications, which still lag behind websites in searchability.</p>
+            </div>
+            <div class="card">
+                <h3>Linkable</h3>
+                <p>As another characteristic inherited from websites, a well-designed website should use the URI to indicate the current state of the application. This will enable the web app to retain or reload its state when the user bookmarks or shares the app’s URL.</p>
+            </div>
+            <div class="card">
+                <h3>Responsive</h3>
+                <p>A progressive web app’s UI must fit the device’s form factor and screen size.</p>
+            </div>
+            <div class="card">
+                <h3>App-like</h3>
+                <p>A progressive web app should look like a native app and be built on the application shell model, with minimal page refreshes.</p>
+            </div>
+            <div class="card">
+                <h3>Connectivity-independent</h3>
+                <p>It should work in areas of low connectivity or offline (our favorite characteristic).</p>
+            </div>
+            <div class="card">
+                <h3>Re-engageable</h3>
+                <p>Mobile app users are more likely to reuse their apps, and progressive web apps are intended to achieve the same goals through features such as push notifications.</p>
+            </div>
+            <div class="card">
+                <h3>Installable</h3>
+                <p>A progressive web app can be installed on the device’s home screen, making it readily available.</p>
+            </div>
+            <div class="card">
+                <h3>Fresh</h3>
+                <p>When new content is published and the user is connected to the Internet, that content should be made available in the app.</p>
+            </div>
+            <div class="card">
+                <h3>Safe</h3>
+                <p>Because a progressive web app has a more intimate user experience and because all network requests can be intercepted through service workers, it is imperative that the app be hosted over HTTPS to prevent man-in-the-middle attacks.</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+```
+BELOW IS MY LOGIN .HTML
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="POST" action="{{ url_for('login') }}">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+```
+BELOW IS MY FILE/FOLDER STRUCTURE
+```
+(venv) PS C:\Users\coets\Documents\GitHub\flask-pwa-2> tree         
+Folder PATH listing for volume Windows-SSD
+Volume serial number is 1250-2174
+C:.
+├───instance
+├───static
+│   └───images
+├───templates
+├───venv
+│   ├───include
+│   │   └───site
+│   │       └───python3.12
+│   │           └───greenlet
+│   ├───Lib
+│   │   └───site-packages
+│   │       ├───aiohttp
+│   │       │   ├───.hash
+│   │       │   └───__pycache__
+│   │       ├───aiohttp-3.9.5.dist-info
+│   │       ├───aiosignal
+│   │       │   └───__pycache__
+│   │       ├───aiosignal-1.3.1.dist-info
+│   │       ├───annotated_types
+│   │       │   └───__pycache__
+│   │       ├───annotated_types-0.7.0.dist-info
+│   │       │   └───licenses
+│   │       ├───attr
+│   │       │   └───__pycache__
+│   │       ├───attrs
+│   │       │   └───__pycache__
+│   │       ├───attrs-23.2.0.dist-info
+│   │       │   └───licenses
+│   │       ├───blinker
+│   │       │   └───__pycache__
+│   │       ├───blinker-1.7.0.dist-info
+│   │       ├───certifi
+│   │       │   └───__pycache__
+│   │       ├───certifi-2024.6.2.dist-info
+│   │       ├───cffi
+│   │       │   └───__pycache__
+│   │       ├───cffi-1.16.0.dist-info
+│   │       ├───charset_normalizer
+│   │       │   ├───cli
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───charset_normalizer-3.3.2.dist-info
+│   │       ├───click
+│   │       │   └───__pycache__
+│   │       ├───click-8.1.7.dist-info
+│   │       ├───colorama
+│   │       │   ├───tests
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───colorama-0.4.6.dist-info
+│   │       │   └───licenses
+│   │       ├───cryptography
+│   │       │   ├───hazmat
+│   │       │   │   ├───backends
+│   │       │   │   │   ├───openssl
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───bindings
+│   │       │   │   │   ├───openssl
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───_rust
+│   │       │   │   │   │   └───openssl
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───primitives
+│   │       │   │   │   ├───asymmetric
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───ciphers
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───kdf
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───serialization
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───twofactor
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───x509
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───cryptography-42.0.7.dist-info
+│   │       ├───dotenv
+│   │       │   └───__pycache__
+│   │       ├───flask
+│   │       │   ├───json
+│   │       │   │   └───__pycache__
+│   │       │   ├───sansio
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───flask-3.0.2.dist-info
+│   │       ├───flask_login
+│   │       │   └───__pycache__
+│   │       ├───Flask_Login-0.6.3.dist-info
+│   │       ├───flask_sqlalchemy
+│   │       │   └───__pycache__
+│   │       ├───flask_sqlalchemy-3.1.1.dist-info
+│   │       ├───frozenlist
+│   │       │   └───__pycache__
+│   │       ├───frozenlist-1.4.1.dist-info
+│   │       ├───greenlet
+│   │       │   ├───platform
+│   │       │   │   └───__pycache__
+│   │       │   ├───tests
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───greenlet-3.0.3.dist-info
+│   │       ├───gunicorn
+│   │       │   ├───app
+│   │       │   │   └───__pycache__
+│   │       │   ├───http
+│   │       │   │   └───__pycache__
+│   │       │   ├───instrument
+│   │       │   │   └───__pycache__
+│   │       │   ├───workers
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───gunicorn-21.2.0.dist-info
+│   │       ├───idna
+│   │       │   └───__pycache__
+│   │       ├───idna-3.7.dist-info
+│   │       ├───importlib_metadata
+│   │       │   └───__pycache__
+│   │       ├───importlib_metadata-6.1.0.dist-info
+│   │       ├───itsdangerous
+│   │       │   └───__pycache__
+│   │       ├───itsdangerous-2.1.2.dist-info
+│   │       ├───jinja2
+│   │       │   └───__pycache__
+│   │       ├───Jinja2-3.1.3.dist-info
+│   │       ├───jwt
+│   │       │   └───__pycache__
+│   │       ├───markupsafe
+│   │       │   └───__pycache__
+│   │       ├───MarkupSafe-2.1.1.dist-info
+│   │       ├───multidict
+│   │       │   └───__pycache__
+│   │       ├───multidict-6.0.5.dist-info
+│   │       ├───packaging
+│   │       │   └───__pycache__
+│   │       ├───packaging-24.0.dist-info
+│   │       ├───pip
+│   │       │   ├───_internal
+│   │       │   │   ├───cli
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───commands
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───distributions
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───index
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───locations
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───metadata
+│   │       │   │   │   ├───importlib
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───models
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───network
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───operations
+│   │       │   │   │   ├───build
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───install
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───req
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───resolution
+│   │       │   │   │   ├───legacy
+│   │       │   │   │   ├───resolvelib
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───utils
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───vcs
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───_vendor
+│   │       │   │   ├───cachecontrol
+│   │       │   │   │   ├───caches
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───certifi
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───chardet
+│   │       │   │   │   ├───cli
+│   │       │   │   │   ├───metadata
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───colorama
+│   │       │   │   │   └───tests
+│   │       │   │   ├───distlib
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───distro
+│   │       │   │   ├───idna
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───msgpack
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───packaging
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───pkg_resources
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───platformdirs
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───pygments
+│   │       │   │   │   ├───filters
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───formatters
+│   │       │   │   │   ├───lexers
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───styles
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───pyparsing
+│   │       │   │   │   ├───diagram
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───pyproject_hooks
+│   │       │   │   │   ├───_in_process
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───requests
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───resolvelib
+│   │       │   │   │   ├───compat
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───rich
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───tenacity
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───tomli
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───truststore
+│   │       │   │   ├───urllib3
+│   │       │   │   │   ├───contrib
+│   │       │   │   │   │   ├───_securetransport
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───packages
+│   │       │   │   │   │   ├───backports
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   ├───util
+│   │       │   │   │   │   └───__pycache__
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───webencodings
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───pip-24.0.dist-info
+│   │       ├───pycparser
+│   │       │   ├───ply
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───pycparser-2.22.dist-info
+│   │       ├───pydantic
+│   │       │   ├───deprecated
+│   │       │   │   └───__pycache__
+│   │       │   ├───plugin
+│   │       │   │   └───__pycache__
+│   │       │   ├───v1
+│   │       │   │   └───__pycache__
+│   │       │   ├───_internal
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───pydantic-2.7.3.dist-info
+│   │       │   └───licenses
+│   │       ├───pydantic_core
+│   │       │   └───__pycache__
+│   │       ├───pydantic_core-2.18.4.dist-info
+│   │       │   └───license_files
+│   │       ├───PyJWT-2.8.0.dist-info
+│   │       ├───python_dotenv-1.0.1.dist-info
+│   │       ├───requests
+│   │       │   └───__pycache__
+│   │       ├───requests-2.32.3.dist-info
+│   │       ├───sqlalchemy
+│   │       │   ├───connectors
+│   │       │   │   └───__pycache__
+│   │       │   ├───cyextension
+│   │       │   │   └───__pycache__
+│   │       │   ├───dialects
+│   │       │   │   ├───mssql
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───mysql
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───oracle
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───postgresql
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───sqlite
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───engine
+│   │       │   │   └───__pycache__
+│   │       │   ├───event
+│   │       │   │   └───__pycache__
+│   │       │   ├───ext
+│   │       │   │   ├───asyncio
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───declarative
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───mypy
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───future
+│   │       │   │   └───__pycache__
+│   │       │   ├───orm
+│   │       │   │   └───__pycache__
+│   │       │   ├───pool
+│   │       │   │   └───__pycache__
+│   │       │   ├───sql
+│   │       │   │   └───__pycache__
+│   │       │   ├───testing
+│   │       │   │   ├───fixtures
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───plugin
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───suite
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───util
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───SQLAlchemy-2.0.30.dist-info
+│   │       ├───stytch
+│   │       │   ├───b2b
+│   │       │   │   ├───api
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───models
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───consumer
+│   │       │   │   ├───api
+│   │       │   │   │   └───__pycache__
+│   │       │   │   ├───models
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───core
+│   │       │   │   ├───http
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───shared
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───stytch-10.0.0.dist-info
+│   │       ├───typing_extensions-4.12.1.dist-info
+│   │       ├───urllib3
+│   │       │   ├───contrib
+│   │       │   │   ├───emscripten
+│   │       │   │   │   └───__pycache__
+│   │       │   │   └───__pycache__
+│   │       │   ├───util
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───urllib3-2.2.1.dist-info
+│   │       │   └───licenses
+│   │       ├───werkzeug
+│   │       │   ├───datastructures
+│   │       │   │   └───__pycache__
+│   │       │   ├───debug
+│   │       │   │   ├───shared
+│   │       │   │   └───__pycache__
+│   │       │   ├───middleware
+│   │       │   │   └───__pycache__
+│   │       │   ├───routing
+│   │       │   │   └───__pycache__
+│   │       │   ├───sansio
+│   │       │   │   └───__pycache__
+│   │       │   ├───wrappers
+│   │       │   │   └───__pycache__
+│   │       │   └───__pycache__
+│   │       ├───werkzeug-3.0.2.dist-info
+│   │       ├───yarl
+│   │       │   └───__pycache__
+│   │       ├───yarl-1.9.4.dist-info
+│   │       ├───zipp
+│   │       │   └───__pycache__
+│   │       ├───zipp-3.15.0.dist-info
+│   │       └───__pycache__
+│   └───Scripts
+└───__pycache__
+(venv) PS C:\Users\coets\Documents\GitHub\flask-pwa-2>
+```
+REMEMBER ALL OF THE ABOVE AS MY STARTING CODE
